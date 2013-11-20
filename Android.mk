@@ -24,7 +24,7 @@ LOCAL_SRC_FILES := \
 # libjpeg. See install.txt
 LOCAL_SRC_FILES += \
 	jmemnobs.c
-
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/include
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/include
 
 include $(BUILD_STATIC_LIBRARY)
