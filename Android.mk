@@ -49,3 +49,5 @@ LOCAL_SRC_FILES += \
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/include
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/include
 include $(BUILD_SHARED_LIBRARY)
+
+all: jpeg_static jpeg_shared
