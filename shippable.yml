@@ -1,0 +1,52 @@
+archive: true
+language: java
+jdk:
+    - oraclejdk8
+
+branches:
+    only:
+        - release
+        - master
+        - Shippable
+
+env:
+  global:
+    - secure: VhTZcDWMQ7IHRKQpZM1kC2aUs5/rZ4p4wpjoKj9j5MnX/Ca6DdObK2mVurBxC0rPmzmobtTBCA8HaAYuYWmoM1jF7a3SdTTNSRT+R8fWjxYfqZ1CqGd08/Y/1G+/PKzGjIMuNU6XxJDc6g9V8oM5WHXHj588DDUe6eadhJZBLWrBRc0vjoMQYHzsVA8JBjjYQCvHcUKr3hHKL36th9KILpcnkjgBCsnRTGFTFseBHLq1PSaX1UwgEFE8sBdRMlEGBzZ7yJc/8vS5VpgEWmklY0lJrBk22wSr/SXYYJ2u9Wm/Hl93XphlKSZf8G1Y3YHf0q5jafHYij1o3/HmMt8ytQ==
+
+build:
+  pre_ci_boot:
+    image_name: mithunkundu1983/docker-android-sdk-build
+    image_tag: latest
+    pull: true
+  ci:
+    # accept licenses - create a folder to store the license CRC
+    - yes Y| sudo apt-get install cmake
+    - yes Y| sudo apt-get install zip
+    - mkdir "$ANDROID_HOME/licenses" || true
+    - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
+    - echo -e "\nd56f5187479451eabf01fb78af6dfcb131a6481e" > "$ANDROID_HOME/licenses/android-sdk-license"
+    - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-license"
+    - echo "Downloading NDK (may take awhile)..."
+    - export ANDROID_NDK_VERSION="14b"
+    - export ANDROID_NDK_HOME="/usr/local"
+    - export ANDROID_NDK="/usr/local/android-ndk-r$ANDROID_NDK_VERSION"
+    - wget --quiet --output-document=android-ndk.zip "https://dl.google.com/android/repository/android-ndk-r${ANDROID_NDK_VERSION}-linux-x86_64.zip" 
+    - echo "Installing ndk r${ANDROID_NDK_VERSION}"
+    - unzip -q android-ndk.zip -d "$ANDROID_NDK_HOME" 
+    - rm --force android-ndk.zip
+    - cd jni
+    - ndk-build NDK_APPLICATION_MK=./Application.mk
+
+notifications:
+    email:
+        recipients:
+            - khub.bhalo.app6@gmail.com
+	on_success: change
+	on_failure: always
+after_success:
+- cp shippable/after_sucess.sh after_sucess.sh
+- sudo apt-get install dos2unix
+- dos2unix after_sucess.sh
+- chmod +x after_sucess.sh
+- if [ "$BRANCH" == "shippable" ]; then ./after_sucess.sh; fi
+    
